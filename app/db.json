@@ -1,0 +1,51 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "first_name": "Sebastian",
+      "last_name": "Eschweiler",
+      "username": "sebastianesch",
+      "email": "sebastian@gmail.com"
+    },
+    {
+      "id": 2,
+      "first_name": "Steve",
+      "last_name": "Palmer",
+      "username": "stevepal",
+      "email": "steve@gmail.com"
+    },
+    {
+      "id": 3,
+      "first_name": "Ann",
+      "last_name": "Smith",
+      "username": "annsmith",
+      "email": "ann@gmail.com"
+    },
+    {
+      "id": 9,
+      "first_name": "santi",
+      "last_name": "reyes",
+      "username": "sreyes",
+      "email": "sreyes@gmail.com"
+    }
+  ],
+  "recipes": [
+    {
+      "id": 1,
+      "title": "Chocotorta",
+      "thumbnailUrl": "https://i.imgur.com/6mopLY7.jpg",
+      "imgUrl": "https://i.imgur.com/6mopLY7.jpg",
+      "ingredients": "1 taza de harina\n1 paquete de chocolinas\n1 pote de dulce de leche\n1L de leche",
+      "instructions": "Mojar las chocolinas en la leche\nHacer una capa de chocolinas\nTaparlo con una capa de dulce de leche\nRepetir hasta quedarte sin ingredientes"
+    },
+    {
+      "id": 2,
+      "title": "Chocotorta Dos",
+      "thumbnailUrl": "https://i.imgur.com/6mopLY7.jpg",
+      "imgUrl": "https://i.imgur.com/6mopLY7.jpg",
+      "ingredients": "1 taza de harina\n1 paquete de chocolinas\n1 pote de dulce de leche\n1L de leche",
+      "instructions": "Mojar las chocolinas en la leche\nHacer una capa de chocolinas\nTaparlo con una capa de dulce de leche\nRepetir hasta quedarte sin ingredientes"
+    }
+  ],
+  "likes": []
+}
