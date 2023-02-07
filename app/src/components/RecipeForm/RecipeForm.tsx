@@ -49,12 +49,7 @@ export function RecipeForm() {
   });
 
   const previews = files.map((file, index) => {
-    var reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const imageUrl = reader.result;
-      setValue("image", imageUrl);
-    };
+    setValue("image", file);
     const imageURL = URL.createObjectURL(file);
     return (
       <div key={index}>

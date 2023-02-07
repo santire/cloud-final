@@ -45,7 +45,62 @@
       "imgUrl": "https://i.imgur.com/6mopLY7.jpg",
       "ingredients": "1 taza de harina\n1 paquete de chocolinas\n1 pote de dulce de leche\n1L de leche",
       "instructions": "Mojar las chocolinas en la leche\nHacer una capa de chocolinas\nTaparlo con una capa de dulce de leche\nRepetir hasta quedarte sin ingredientes"
+    },
+    {
+      "title": "asdf",
+      "username": "asdf",
+      "ingredients": "asdf",
+      "instructions": "asdf",
+      "thumbnailUrl": "https://i.ibb.co/mh0H6nq/cake.jpg",
+      "id": 3
+    },
+    {
+      "title": "Receta Posta",
+      "username": "santire",
+      "ingredients": "COsas muchas cosas",
+      "instructions": "Hacer cosas con las cosas",
+      "thumbnailUrl": "https://i.ibb.co/Rb8bhVw/9892ee53243181-Y3-Jvc-Cwx-NDAz-LDEw-OTgs-MCwy-Mz-U.jpg",
+      "id": 4
+    },
+    {
+      "title": "Test 23",
+      "username": "asdfasdf",
+      "ingredients": "asdfasdfasdfas\nasdfasdfasdfasd\nasdfasdf",
+      "instructions": "dfasdfasdfas\nasdfasdfasdfasd\nasdfasdf",
+      "thumbnailUrl": "https://i.ibb.co/mh0H6nq/cake.jpg",
+      "id": 5
     }
   ],
-  "likes": []
+  "likes": [
+    {
+      "userId": 9,
+      "recipeId": 4,
+      "id": 1
+    },
+    {
+      "userId": 9,
+      "recipeId": 1,
+      "id": 2
+    },
+    {
+      "userId": 1,
+      "recipeId": 1,
+      "id": 3
+    },
+    {
+      "userId": 1,
+      "recipeId": 2,
+      "id": 4
+    },
+    {
+      "userId": 1,
+      "recipeId": 3,
+      "id": 5
+    },
+    {
+      "userId": 1,
+      "recipeId": 4,
+      "id": 6
+    }
+  ]
 }

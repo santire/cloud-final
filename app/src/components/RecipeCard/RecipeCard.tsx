@@ -53,9 +53,15 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     if (!user || !recipe.id) return;
 
     if (recipe.likes.filter((l) => l == user?.userId).length > 0) {
-      dislikeMutation.mutate(recipe.id);
+      dislikeMutation.mutate({
+        userId: user.userId ?? "0",
+        recipeId: recipe.id,
+      });
     } else {
-      likeMutation.mutate(recipe.id);
+      likeMutation.mutate({
+        userId: user.userId ?? "0",
+        recipeId: recipe.id,
+      });
     }
   };
 

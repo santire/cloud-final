@@ -9,7 +9,7 @@ export const apiClient = axios.create({
 });
 
 // apiClient.defaults.headers.common["Content-Type"] = "application/json";
-apiClient.defaults.headers.common["Authorization"] = authHeader().Authorization;
+// apiClient.defaults.headers.common["Authorization"] = authHeader().Authorization;
 
 function authHeader() {
   const token = TokenProvider.getInstance().getToken();
