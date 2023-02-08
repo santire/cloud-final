@@ -27,7 +27,7 @@ def serialize_recipe(
 
 
 def get_recipes(event, context):
-    current_user = user_from_jwt("asdas")
+    current_user = user_from_jwt(event["headers"]["Authorization"])
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM recipes;")
 
@@ -39,8 +39,6 @@ def get_recipes(event, context):
     cursor.close()
 
     response = {"statusCode": 200, "body": json.dumps(result)}
-
-    print(response)
 
     return response
 
@@ -56,7 +54,7 @@ def get_recipes(event, context):
 
 def get_recipe(event, context):
     recipe_id = 10
-    current_user = user_from_jwt("asdas")
+    current_user = user_from_jwt(event["headers"]["Authorization"])
     cursor = connection.cursor()
     cursor.execute(f"SELECT * FROM recipes WHERE id = {recipe_id};")
     recipe = cursor.fetchone()
@@ -80,7 +78,7 @@ def get_recipe(event, context):
 
 
 def create_recipe(event, context):
-    current_user = user_from_jwt("asdas")
+    current_user = user_from_jwt(event["headers"]["Authorization"])
 
     sql = f"""
         INSERT INTO recipes(title, body, image, user_id, created_at, updated_at)
@@ -99,8 +97,9 @@ def create_recipe(event, context):
     cursor.execute("SELECT * FROM recipes WHERE id = %s LIMIT 1;", (recipe_id,))
     recipe = cursor.fetchone()
 
-    body = serialize_recipe(current_user, *recipe)
-    response = {"statusCode": 200, "body": json.dumps(body)}
+    connection.commit()
+    result = serialize_recipe(current_user, *recipe)
+    response = {"statusCode": 200, "body": json.dumps(list(event.keys()))}
 
     return response
 
@@ -115,7 +114,9 @@ def create_recipe(event, context):
 
 
 def like_recipe(event, context):
-    recipe_id = 10
+    current_user = user_from_jwt(event["headers"]["Authorization"])
+
+    recipe_id = event["queryStringParameters"]["recipe_id"]
     sql = f"""
         INSERT INTO likes(recipe_id, user_id, created_at, updated_at)
         VALUES ({recipe_id}, {current_user["id"]}, %s, %s) RETURNING id;
@@ -146,7 +147,8 @@ def like_recipe(event, context):
 
 
 def unlike_recipe(event, context):
-    recipe_id = 10
+    current_user = user_from_jwt(event["headers"]["Authorization"])
+    recipe_id = event["queryStringParameters"]["recipe_id"]
     sql = f"""
         DELETE FROM likes
         WHERE recipe_id = {recipe_id} AND user_id = {current_user["id"]}
@@ -173,6 +175,21 @@ def unlike_recipe(event, context):
     """
 
 
+def sign_up(event, context):
+    username = event["userName"]
+    email = event["request"]["userAttributes"]["email"]
+    profile = event["request"]["userAttributes"]["profile"]
+
+    sql = f"""
+        INSERT INTO users(username, email, instagram_username, created_at, updated_at)
+        VALUES (%s, %s, %s, NOW(), NOW()) RETURNING id;
+    """
+    cursor = connection.cursor()
+    cursor.execute(sql, (username, email, profile))
+
+    return event
+
+
 def select_winner(event, context):
     cursor = connection.cursor()
     cursor.execute(
@@ -193,13 +210,12 @@ def send_winner_email(winner_email):
 
 
 def user_from_jwt(token):
-    token = "eyJraWQiOiJJRTdFYzQySWNTMkVVZVFNK0RLYUVYaFBTZUJLRGs3a0k2RWlwUXZzV2g0PSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiU2s5VjR3RW9ERElkMzA1b1ZTUHBTZyIsInN1YiI6ImZjNmJmZmVkLThjMzQtNDYyNi1hZmFhLWNhMDljMjAyODA1NCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9pa21jTjBFMXkiLCJjb2duaXRvOnVzZXJuYW1lIjoianN1YXJlemIiLCJhdWQiOiI1OG9xdWZ2ZDc3dTE2ZGNmc2poZmtxdDluNiIsImV2ZW50X2lkIjoiYzE0MDE3MTAtMDdhYi00OTNhLWI4ZjItOTFjYzQzMDZlM2IxIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NzU3ODI3MzAsImV4cCI6MTY3NTc4NjMzMCwiaWF0IjoxNjc1NzgyNzMwLCJqdGkiOiJkNWQxMzI2ZS1iMjNkLTQ5ODEtODg0MC1jYzE4MDBhMDkwYTciLCJlbWFpbCI6ImpzdWFyZXpib2RAZ21haWwuY29tIn0.XR23ixrGYeg50udK74K8OPf_8WQvE1L223n7lxBKzDz1NN4KYIZbk7w-PyDAg8amNJOg5FiG-tsOFowTYNjAQzdUpSsMpJ8hl9j1NLGdQj6DX6FPSPVc3lZaU7rO6aNX_zMps7yx4X_-QFU4p-zJhMMPnG4nlfcBQszl8I3HLhn_BJpc6Kn2rGV9EanRoi_GV44c0Byt29KC0zmzrt3QGbnZb7kCg3PN15ujTH9T3DI5rfc3VPoLksHXykjoaJWbRCfo5-AlY2-qk9nbyrvAH4ea4KSg97r15thk7Cpg5nnzo5CzcekKwNFWNcHszlSgJz6WkRgL5aNgPRbWPv4i-A"
     decoded_token = jwt.decode(token, options={"verify_signature": False})
-    email = decoded_token["email"]
+    username = decoded_token["cognito:username"]
 
     cursor = connection.cursor()
     cursor.execute(
-        f"SELECT id, username, email, instagram_username FROM users WHERE email = '{email}' LIMIT 1;"
+        f"SELECT id, username, email, instagram_username FROM users WHERE username = '{username}' LIMIT 1;"
     )
     username = cursor.fetchone()
 

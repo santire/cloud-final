@@ -77,6 +77,8 @@ functions:
     handler: handler.like_recipe
   unlike_recipe:
     handler: handler.unlike_recipe
+  sign_up:
+    handler: handler.sign_up
   select_winner:
     handler: handler.select_winner
     events:

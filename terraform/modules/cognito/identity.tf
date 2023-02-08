@@ -1,6 +1,49 @@
 resource "aws_cognito_user_pool" "user_pool" {
   name = "user_pool"
+
+  auto_verified_attributes = ["email"]
+
+  schema {
+    name      = "email"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = false  # false for "sub"
+    required                 = true # true for "sub"
+
+    string_attribute_constraints {   # if it is a string
+      min_length = 1                 # 10 for "birthdate"
+      max_length = 2048              # 10 for "birthdate"
+    }
+  }
+
+  schema {
+    name      = "profile"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = false  # false for "sub"
+    required                 = true # true for "sub"
+
+    string_attribute_constraints {   # if it is a string
+      min_length = 1                 # 10 for "birthdate"
+      max_length = 2048              # 10 for "birthdate"
+    }
+  }
+
+  lambda_config {
+    post_confirmation = "arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-sign_up"
+  }
+
 }
+
+
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = var.post_confirmation_lambda_name
+  principal     = "cognito-idp.amazonaws.com"
+  source_arn    = aws_cognito_user_pool.user_pool.arn
+}
+
 
 resource "aws_cognito_user_pool_client" "webapp" {
   name = "webapp"
@@ -10,7 +53,7 @@ resource "aws_cognito_user_pool_client" "webapp" {
 
   access_token_validity = 60
   allowed_oauth_flows   = [
-    "code"
+    "implicit"
   ]
 
   allowed_oauth_flows_user_pool_client = true
@@ -81,4 +124,10 @@ resource "aws_cognito_user_pool_client" "webapp" {
     access_token  = "minutes"
     id_token      = "minutes"
   }
+}
+
+
+resource "aws_cognito_user_pool_domain" "main" {
+  domain       = "final-cloud-2022c2"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
 }

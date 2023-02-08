@@ -19,6 +19,14 @@ module "api_gateway" {
     create_like = {
       lambda_function_name = "arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-like_recipe"
       lambda_function_invoke_arn = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-like_recipe/invocations"
+    },
+    remove_like = {
+      lambda_function_name = "arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-unlike_recipe"
+      lambda_function_invoke_arn = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-unlike_recipe/invocations"
+    } 
+    sign_up = {
+      lambda_function_name = "arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-sign_up"
+      lambda_function_invoke_arn = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:660472391051:function:lambdas-dev-sign_up/invocations"
     } 
   }
 }
@@ -27,6 +35,7 @@ module "cognito" {
   source = "../modules/cognito"
 
   backend_callback_url = module.api_gateway.invoke_url
+  post_confirmation_lambda_name = "lambdas-dev-sign_up"
 }
 
 module "rds" {
