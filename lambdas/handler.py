@@ -40,7 +40,15 @@ def serialize_recipe(
 
 
 def get_recipes(event, context):
-    current_user = user_from_jwt(event["headers"]["Authorization"])
+    if (
+        event["headers"] is not None
+        and "Authorization" in event["headers"]
+        and event["headers"]["Authorization"] is not None
+        and event["headers"]["Authorization"] != ""
+    ):
+        current_user = user_from_jwt(event["headers"]["Authorization"])
+    else:
+        current_user = None
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM recipes;")
 
@@ -51,7 +59,15 @@ def get_recipes(event, context):
 
     cursor.close()
 
-    response = {"statusCode": 200, "body": json.dumps(result)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+        },
+        "body": json.dumps(result),
+    }
 
     return response
 
@@ -76,7 +92,15 @@ def get_recipe(event, context):
 
     serialized_recipe = serialize_recipe(current_user, *recipe)
 
-    response = {"statusCode": 200, "body": json.dumps(serialized_recipe)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+        },
+        "body": json.dumps(serialized_recipe),
+    }
 
     return response
 
@@ -91,14 +115,7 @@ def get_recipe(event, context):
 
 
 def create_recipe(event, context):
-    if (
-        event["headers"] is not None
-        and "Authorization" in event["headers"]
-        and event["headers"]["Authorization"] is not None
-    ):
-        current_user = user_from_jwt(event["headers"]["Authorization"])
-    else:
-        current_user = None
+    current_user = user_from_jwt(event["headers"]["Authorization"])
 
     content_type = event["headers"]["Content-Type"]
     postdata = base64.b64decode(event["body"])
@@ -149,7 +166,15 @@ def create_recipe(event, context):
 
     connection.commit()
     result = serialize_recipe(current_user, *recipe)
-    response = {"statusCode": 200, "body": json.dumps(result)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET, DELETE",
+        },
+        "body": json.dumps(result),
+    }
 
     return response
 
@@ -182,7 +207,15 @@ def like_recipe(event, context):
         "user_id": current_user["id"],
     }
 
-    response = {"statusCode": 200, "body": json.dumps(body)}
+    response = {
+        "statusCode": 200,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET, DELETE",
+        },
+        "body": json.dumps(body),
+    }
 
     return response
 
@@ -211,7 +244,14 @@ def unlike_recipe(event, context):
 
     cursor.close()
 
-    response = {"statusCode": 204, "body": {}}
+    response = {
+        "statusCode": 204,
+        "headers": {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET, DELETE",
+        },
+    }
 
     return response
 

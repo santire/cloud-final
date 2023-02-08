@@ -10,7 +10,7 @@ import {
   Anchor,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link, redirect } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { TokenProvider } from "../../utils/TokenProvider";
 import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
@@ -21,15 +21,16 @@ export function Header() {
     useDisclosure(false);
   const { classes, theme } = useStyles();
   const { authed } = useAuth();
+  const navigate = useNavigate();
   const tokenProvider = TokenProvider.getInstance();
 
   const LOGIN_URL =
-    process.env.REACT_APP_LOGIN_ENDPOINT ||
-    "https://cloud-api-jsuarezb.auth.us-east-1.amazoncognito.com/login?client_id=58oqufvd77u16dcfsjhfkqt9n6&response_type=token&scope=email+openid+phone&redirect_uri=http%3A%2F%2Flocalhost%3A3000";
+    import.meta.env.VITE_LOGIN_ENDPOINT ||
+    "localhost:3000";
 
   const logout = () => {
     tokenProvider.setToken("");
-    redirect("/");
+    navigate("/");
   };
 
   return (

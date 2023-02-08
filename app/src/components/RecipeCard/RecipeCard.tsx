@@ -50,17 +50,15 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   });
 
   const handleLike = () => {
-    if (!user || !recipe.id) return;
+    if (!recipe.id) return;
 
-    if (recipe.likes.filter((l) => l == user?.userId).length > 0) {
+    if (recipe.likedByUser) {
       dislikeMutation.mutate({
-        userId: user.userId ?? "0",
-        recipeId: recipe.id,
+        recipeId: "" + recipe.id,
       });
     } else {
       likeMutation.mutate({
-        userId: user.userId ?? "0",
-        recipeId: recipe.id,
+        recipeId: "" + recipe.id,
       });
     }
   };
@@ -77,7 +75,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       </Card.Section>
       <Card.Section className={classes.section}>
         <Text className={classes.text} lineClamp={2}>
-          {recipe.ingredients}
+          {recipe.body}
         </Text>
       </Card.Section>
 
@@ -96,7 +94,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
       <Card.Section className={classes.footer}>
         <Group position="apart">
           <Text size="xs" color="dimmed">
-            Le gusta a {recipe.likes.length} usuarios
+            Le gusta a {recipe.likes} usuarios
           </Text>
           <Group spacing={0}>
             <ActionIcon onClick={handleLike}>
@@ -104,11 +102,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                 size={18}
                 color={theme.colors.red[6]}
                 stroke={1.5}
-                fill={
-                  recipe.likes.filter((l) => l == user?.userId).length > 0
-                    ? theme.colors.red[6]
-                    : "none"
-                }
+                fill={recipe.likedByUser ? theme.colors.red[6] : "none"}
               />
             </ActionIcon>
           </Group>

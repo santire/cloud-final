@@ -85,34 +85,18 @@ export function RecipeForm() {
             Crear receta
           </Text>
           <div className={classes.fields}>
-            <SimpleGrid cols={2} breakpoints={[{ maxWidth: "sm", cols: 1 }]}>
-              <TextInput
-                label="Titulo"
-                placeholder="Titulo"
-                required
-                // error={errors.email?.message}
-                {...register("title")}
-              />
-              <TextInput
-                label="Usuario"
-                placeholder="Usuario"
-                required
-                // error={errors.username?.message}
-                {...register("username")}
-              />
-            </SimpleGrid>
+            <TextInput
+              label="Titulo"
+              placeholder="Titulo"
+              required
+              {...register("title")}
+            />
             <Divider my="xs" label="" />
             <Textarea
-              label="Ingredientes"
-              placeholder="Lista de ingredientes"
-              required
-              {...register("ingredients")}
-            />
-            <Textarea
               label="Receta"
-              placeholder="Instrucciones de la receta"
+              placeholder="Aqui va la receta"
               required
-              {...register("instructions")}
+              {...register("body")}
             />
           </div>
           <Flex mt="sm" direction="column" hidden={files.length == 0} w={460}>
@@ -157,7 +141,7 @@ export function RecipeForm() {
                       stroke={1.5}
                       color={
                         theme.colors[theme.primaryColor][
-                          theme.colorScheme === "dark" ? 4 : 6
+                        theme.colorScheme === "dark" ? 4 : 6
                         ]
                       }
                     />

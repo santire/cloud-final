@@ -1,13 +1,10 @@
 export interface Recipe {
-  id?: string;
+  id?: number;
   title: string;
+  body: string;
+  likes: number;
 
   imgUrl?: string;
   thumbnailUrl?: string;
-
-  ingredients: string;
-  instructions: string;
-
-  // likes: number;
-  likes: string[];
+  likedByUser?: boolean;
 }

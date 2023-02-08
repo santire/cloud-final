@@ -1,7 +1,7 @@
 import { Center, Container, Loader, SimpleGrid, Title } from "@mantine/core";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getRecipes } from "../api/RecipeService";
 import { RecipeCard } from "../components/RecipeCard/RecipeCard";
 import { Recipe } from "../types/Recipe";
@@ -13,18 +13,13 @@ export function HomePage() {
     getRecipes
   );
   const tokenProvider = TokenProvider.getInstance();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get("id_token");
+    const token = location.hash?.slice(1)?.split("&")[0]?.split("=")[1] ?? null;
     if (token) {
       tokenProvider.setToken(token);
-      // tokenProvider.setUser(parseJwt(token));
-      tokenProvider.setUser(
-        JSON.stringify({ userId: 9, email: "sreyes@itba.edu.ar" })
-      );
-
       navigate("/");
     }
   });
