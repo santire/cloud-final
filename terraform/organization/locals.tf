@@ -4,16 +4,17 @@ locals {
         cidr = "10.0.0.0/16"
 
         azs             = ["us-east-1a", "us-east-1b"]
+        public_subnets  = ["10.0.4.0/24", "10.0.5.0/24"]
         private_subnets = ["10.0.2.0/24", "10.0.3.0/24"]
 
         enable_nat_gateway = false
-        enable_vpn_gateway = false
+        enable_vpn_gateway = true
     }
 
-    lab_role = "arn:aws:iam::139927629559:role/LabRole"
+    lab_role = "arn:aws:iam::660472391051:role/LabRole"
 
   # S3
-  bucket_name = "2022c2-g1-cloud-itba-edu-ar"
+  bucket_name = "final-2022c2-g1-cloud-itba-edu-ar"
   path        = "../resources"
   region      = "us-east-1"
 

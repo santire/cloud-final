@@ -23,6 +23,14 @@ frameworkVersion: "3"
 provider:
   name: aws
   runtime: python3.8
+  environment:
+    DATABASE_URL: ${env:DATABASE_URL}
+  vpc:
+    subnetIds:
+      - ${env:LAMBDA_SUBNET_US_EAST_1A_ID}
+      - ${env:LAMBDA_SUBNET_US_EAST_1B_ID}
+    securityGroupIds:
+      - ${env:LAMBDA_SECURITY_GROUP_ID}
 
 # you can overwrite defaults here
 #  stage: dev

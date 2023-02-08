@@ -75,9 +75,7 @@ resource "aws_cognito_user_pool_client" "webapp" {
     "zoneinfo"
   ]
 
-  callback_urls = [
-    "https://${module.static_site.cdn_domain_name}/sign_in_callback"
-  ]
+  callback_urls = [var.backend_callback_url]
 
   token_validity_units {
     access_token  = "minutes"

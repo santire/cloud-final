@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 
   shared_credentials_files = ["~/.aws/credentials"]
-  profile                  = "itba-cloud"
+  profile                  = "final-cloud"
 
   default_tags {
     tags = {
