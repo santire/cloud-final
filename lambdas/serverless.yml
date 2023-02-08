@@ -60,7 +60,15 @@ provider:
 
 functions:
   get_recipes:
-    handler: handler.hello
+    handler: handler.get_recipes
+  get_recipe:
+    handler: handler.get_recipe
+  create_recipe:
+    handler: handler.create_recipe
+  like_recipe:
+    handler: handler.like_recipe
+  unlike_recipe:
+    handler: handler.unlike_recipe
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -112,3 +120,13 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+plugins:
+  - serverless-python-requirements
+
+useDotenv: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    usePipenv: false
