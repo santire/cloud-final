@@ -4,6 +4,10 @@ import json
 import jwt
 import psycopg2
 import os
+from PIL import Image, ImageDraw
+from io import BytesIO
+import uuid
+
 
 import base64
 from requests_toolbelt.multipart import decoder
@@ -12,6 +16,7 @@ from datetime import datetime
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 RAW_IMAGES_BUCKET_NAME = os.getenv("RAW_IMAGES_BUCKET_NAME")
+THUMBNAILS_BUCKET_NAME = os.getenv("THUMBNAILS_BUCKET_NAME")
 
 connection = psycopg2.connect(DATABASE_URL)
 s3 = boto3.client("s3")
@@ -28,7 +33,9 @@ def serialize_recipe(
         "thumbnail_url": image_url,
         "owner_id": owner_id,
         "likes": count_recipe_likes(recipe_id),
-        "liked_by_user": recipe_liked_by_user(recipe_id, current_user["id"]),
+        "liked_by_user": recipe_liked_by_user(recipe_id, current_user["id"])
+        if current_user is not None
+        else None,
     }
 
 
@@ -84,7 +91,15 @@ def get_recipe(event, context):
 
 
 def create_recipe(event, context):
-    current_user = user_from_jwt(event["headers"]["Authorization"])
+    if (
+        event["headers"] is not None
+        and "Authorization" in event["headers"]
+        and event["headers"]["Authorization"] is not None
+    ):
+        current_user = user_from_jwt(event["headers"]["Authorization"])
+    else:
+        current_user = None
+
     content_type = event["headers"]["Content-Type"]
     postdata = base64.b64decode(event["body"])
 
@@ -113,7 +128,8 @@ def create_recipe(event, context):
         if b'name="image"' in part.headers[b"Content-Disposition"]
     ][0]
 
-    key = "foo.jpeg"
+    key = f"images/{current_user['instagram_username']}/{uuid.uuid4()}"
+    content_type = image_bytes.headers[b"Content-Type"].decode("utf-8")
     s3_client = boto3.client("s3")
     s3_client.put_object(
         Body=image_bytes.content,
@@ -133,7 +149,7 @@ def create_recipe(event, context):
 
     connection.commit()
     result = serialize_recipe(current_user, *recipe)
-    response = {"statusCode": 200, "body": json.dumps(list(event.keys()))}
+    response = {"statusCode": 200, "body": json.dumps(result)}
 
     return response
 
@@ -243,6 +259,38 @@ def select_winner(event, context):
 
 def send_winner_email(winner_email):
     pass
+
+
+def resize_and_watermark(event, context):
+    bucket = s3.Bucket(RAW_IMAGES_BUCKET_NAME)
+
+    resize_image(
+        bucket.name,
+        event["Records"][0]["s3"]["object"]["key"],
+        THUMBNAILS_BUCKET_NAME,
+    )
+
+
+def resize_image(src_bucket, key, des_bucket):
+    size = (0, 0, 256, 256)
+    bucket = s3.Bucket(src_bucket)
+    in_mem_file = BytesIO()
+    client = boto3.client("s3")
+    username = key.split("/")[1]
+
+    file_byte_string = client.get_object(Bucket=src_bucket, Key=key)["Body"].read()
+    im = Image.open(BytesIO(file_byte_string))
+
+    im.crop(size)
+
+    d1 = ImageDraw.Draw(im)
+    d1.text((10, 10), f"@{username}", fill=(255, 255, 255))
+
+    # ISSUE : https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image
+    im.save(in_mem_file, format=im.format)
+    in_mem_file.seek(0)
+    new_key = key.replace("images", "thumbnails")
+    response = client.put_object(Body=in_mem_file, Bucket=des_bucket, Key=new_key)
 
 
 def user_from_jwt(token):

@@ -26,6 +26,7 @@ provider:
   environment:
     DATABASE_URL: ${env:DATABASE_URL}
     RAW_IMAGES_BUCKET_NAME: ${env:RAW_IMAGES_BUCKET_NAME}
+    THUMBNAILS_BUCKET_NAME: ${env:THUMBNAILS_BUCKET_NAME}
   vpc:
     subnetIds:
       - ${env:LAMBDA_SUBNET_US_EAST_1A_ID}
@@ -85,6 +86,12 @@ functions:
     handler: handler.select_winner
     events:
       - schedule: cron(0 20 ? * 6 *)
+  resize_and_watermark:
+    handler: handler.resize_and_watermark
+    events:
+      - s3:
+          bucket: ${env:RAW_IMAGES_BUCKET_NAME}
+          existing: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

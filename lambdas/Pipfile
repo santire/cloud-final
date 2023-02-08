@@ -11,6 +11,7 @@ boto3 = "*"
 pyjwt = "*"
 requests-toolbelt = "*"
 multipart = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.1"
