@@ -1,14 +1,20 @@
+import boto3
+import base64
 import json
 import jwt
 import psycopg2
 import os
 
+import base64
+from requests_toolbelt.multipart import decoder
+
 from datetime import datetime
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-IMAGE_BUCKET_NAME = os.getenv("IMAGE_BUCKET_NAME")
+RAW_IMAGES_BUCKET_NAME = os.getenv("RAW_IMAGES_BUCKET_NAME")
 
 connection = psycopg2.connect(DATABASE_URL)
+s3 = boto3.client("s3")
 
 
 def serialize_recipe(
@@ -79,18 +85,46 @@ def get_recipe(event, context):
 
 def create_recipe(event, context):
     current_user = user_from_jwt(event["headers"]["Authorization"])
+    content_type = event["headers"]["Content-Type"]
+    postdata = base64.b64decode(event["body"])
+
+    parts = decoder.MultipartDecoder(postdata, content_type).parts
 
     sql = f"""
         INSERT INTO recipes(title, body, image, user_id, created_at, updated_at)
         VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
     """
-    title = "Alfajor"
-    body = "Paso 1) asdas Paso 2) nigjewk"
-    image = "https://asdasda.com"
+    title = [
+        part.text
+        for part in parts
+        if b'name="title"' in part.headers[b"Content-Disposition"]
+    ][0]
+    body = [
+        part.text
+        for part in parts
+        if b'name="body"' in part.headers[b"Content-Disposition"]
+    ][0]
+
+    import boto3
+
+    image_bytes = [
+        part
+        for part in parts
+        if b'name="image"' in part.headers[b"Content-Disposition"]
+    ][0]
+
+    key = "foo.jpeg"
+    s3_client = boto3.client("s3")
+    s3_client.put_object(
+        Body=image_bytes.content,
+        Bucket=RAW_IMAGES_BUCKET_NAME,
+        Key=key,
+        ContentType=image_bytes.headers[b"Content-Type"].decode("utf-8"),
+    )
 
     cursor = connection.cursor()
     cursor.execute(
-        sql, (title, body, image, current_user["id"], datetime.now(), datetime.now())
+        sql, (title, body, key, current_user["id"], datetime.now(), datetime.now())
     )
     recipe_id = cursor.fetchone()[0]
 
@@ -186,6 +220,8 @@ def sign_up(event, context):
     """
     cursor = connection.cursor()
     cursor.execute(sql, (username, email, profile))
+
+    connection.commit()
 
     return event
 

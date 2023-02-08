@@ -25,6 +25,7 @@ provider:
   runtime: python3.8
   environment:
     DATABASE_URL: ${env:DATABASE_URL}
+    RAW_IMAGES_BUCKET_NAME: ${env:RAW_IMAGES_BUCKET_NAME}
   vpc:
     subnetIds:
       - ${env:LAMBDA_SUBNET_US_EAST_1A_ID}
@@ -73,6 +74,7 @@ functions:
     handler: handler.get_recipe
   create_recipe:
     handler: handler.create_recipe
+    timeout: 30
   like_recipe:
     handler: handler.like_recipe
   unlike_recipe:

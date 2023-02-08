@@ -9,6 +9,8 @@ verify_ssl = true
 psycopg2-binary = "*"
 boto3 = "*"
 pyjwt = "*"
+requests-toolbelt = "*"
+multipart = "*"
 
 [requires]
 python_version = "3.1"
