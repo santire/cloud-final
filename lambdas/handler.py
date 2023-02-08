@@ -302,7 +302,8 @@ def send_winner_email(winner_email):
 
 
 def resize_and_watermark(event, context):
-    bucket = s3.Bucket(RAW_IMAGES_BUCKET_NAME)
+    client = boto3.resource("s3")
+    bucket = client.Bucket(RAW_IMAGES_BUCKET_NAME)
 
     resize_image(
         bucket.name,
@@ -313,24 +314,31 @@ def resize_and_watermark(event, context):
 
 def resize_image(src_bucket, key, des_bucket):
     size = (0, 0, 256, 256)
-    bucket = s3.Bucket(src_bucket)
-    in_mem_file = BytesIO()
     client = boto3.client("s3")
+
+    in_mem_file = BytesIO()
     username = key.split("/")[1]
 
-    file_byte_string = client.get_object(Bucket=src_bucket, Key=key)["Body"].read()
+    raw_image = client.get_object(Bucket=src_bucket, Key=key)
+    file_byte_string = raw_image["Body"].read()
     im = Image.open(BytesIO(file_byte_string))
 
-    im.crop(size)
+    im2 = im.crop(size)
 
-    d1 = ImageDraw.Draw(im)
+    d1 = ImageDraw.Draw(im2)
     d1.text((10, 10), f"@{username}", fill=(255, 255, 255))
 
     # ISSUE : https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image
-    im.save(in_mem_file, format=im.format)
+    im2.save(in_mem_file, format=im.format)
     in_mem_file.seek(0)
     new_key = key.replace("images", "thumbnails")
-    response = client.put_object(Body=in_mem_file, Bucket=des_bucket, Key=new_key)
+
+    client.put_object(
+        Body=in_mem_file,
+        Bucket=des_bucket,
+        Key=new_key,
+        ContentType=raw_image["ContentType"],
+    )
 
 
 def user_from_jwt(token):
