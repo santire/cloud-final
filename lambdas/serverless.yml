@@ -69,6 +69,10 @@ functions:
     handler: handler.like_recipe
   unlike_recipe:
     handler: handler.unlike_recipe
+  select_winner:
+    handler: handler.select_winner
+    events:
+      - schedule: cron(0 20 ? * 6 *)
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

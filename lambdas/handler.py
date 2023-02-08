@@ -173,6 +173,25 @@ def unlike_recipe(event, context):
     """
 
 
+def select_winner(event, context):
+    cursor = connection.cursor()
+    cursor.execute(
+        f"SELECT user_id FROM likes WHERE created_at > CURRENT_DATE - interval '7 days' GROUP BY 1 ORDER BY 2 DESC LIMIT 1;"
+    )
+    (winner_id,) = cursor.fetchone()
+
+    cursor.execute(f"SELECT email FROM users WHERE id = {winner_id};")
+    winner_email = cursor.fetchone()[0]
+
+    cursor.close()
+
+    send_winner_email(winner_email)
+
+
+def send_winner_email(winner_email):
+    pass
+
+
 def user_from_jwt(token):
     token = "eyJraWQiOiJJRTdFYzQySWNTMkVVZVFNK0RLYUVYaFBTZUJLRGs3a0k2RWlwUXZzV2g0PSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiU2s5VjR3RW9ERElkMzA1b1ZTUHBTZyIsInN1YiI6ImZjNmJmZmVkLThjMzQtNDYyNi1hZmFhLWNhMDljMjAyODA1NCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9pa21jTjBFMXkiLCJjb2duaXRvOnVzZXJuYW1lIjoianN1YXJlemIiLCJhdWQiOiI1OG9xdWZ2ZDc3dTE2ZGNmc2poZmtxdDluNiIsImV2ZW50X2lkIjoiYzE0MDE3MTAtMDdhYi00OTNhLWI4ZjItOTFjYzQzMDZlM2IxIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2NzU3ODI3MzAsImV4cCI6MTY3NTc4NjMzMCwiaWF0IjoxNjc1NzgyNzMwLCJqdGkiOiJkNWQxMzI2ZS1iMjNkLTQ5ODEtODg0MC1jYzE4MDBhMDkwYTciLCJlbWFpbCI6ImpzdWFyZXpib2RAZ21haWwuY29tIn0.XR23ixrGYeg50udK74K8OPf_8WQvE1L223n7lxBKzDz1NN4KYIZbk7w-PyDAg8amNJOg5FiG-tsOFowTYNjAQzdUpSsMpJ8hl9j1NLGdQj6DX6FPSPVc3lZaU7rO6aNX_zMps7yx4X_-QFU4p-zJhMMPnG4nlfcBQszl8I3HLhn_BJpc6Kn2rGV9EanRoi_GV44c0Byt29KC0zmzrt3QGbnZb7kCg3PN15ujTH9T3DI5rfc3VPoLksHXykjoaJWbRCfo5-AlY2-qk9nbyrvAH4ea4KSg97r15thk7Cpg5nnzo5CzcekKwNFWNcHszlSgJz6WkRgL5aNgPRbWPv4i-A"
     decoded_token = jwt.decode(token, options={"verify_signature": False})
