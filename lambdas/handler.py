@@ -283,13 +283,13 @@ def resize_image(src_bucket, key, des_bucket):
     file_byte_string = raw_image["Body"].read()
     im = Image.open(BytesIO(file_byte_string))
 
-    im.crop(size)
+    im2 = im.crop(size)
 
-    d1 = ImageDraw.Draw(im)
+    d1 = ImageDraw.Draw(im2)
     d1.text((10, 10), f"@{username}", fill=(255, 255, 255))
 
     # ISSUE : https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image
-    im.save(in_mem_file, format=im.format)
+    im2.save(in_mem_file, format=im.format)
     in_mem_file.seek(0)
     new_key = key.replace("images", "thumbnails")
 
