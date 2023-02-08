@@ -69,6 +69,14 @@
       "instructions": "dfasdfasdfas\nasdfasdfasdfasd\nasdfasdf",
       "thumbnailUrl": "https://i.ibb.co/mh0H6nq/cake.jpg",
       "id": 5
+    },
+    {
+      "title": "dfasdfas",
+      "username": "asdfasdfads",
+      "ingredients": "asdfasdfasdfasdf",
+      "instructions": "asdfasdfasdfas",
+      "thumbnailUrl": "https://i.ibb.co/mh0H6nq/cake.jpg",
+      "id": 6
     }
   ],
   "likes": [
@@ -76,11 +84,6 @@
       "userId": 9,
       "recipeId": 4,
       "id": 1
-    },
-    {
-      "userId": 9,
-      "recipeId": 1,
-      "id": 2
     },
     {
       "userId": 1,
@@ -101,6 +104,16 @@
       "userId": 1,
       "recipeId": 4,
       "id": 6
+    },
+    {
+      "userId": 9,
+      "recipeId": 1,
+      "id": 7
+    },
+    {
+      "userId": 9,
+      "recipeId": 2,
+      "id": 8
     }
   ]
 }

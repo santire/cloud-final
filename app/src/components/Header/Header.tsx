@@ -44,9 +44,11 @@ export function Header() {
             <Link to="/" className={classes.link}>
               Inicio
             </Link>
-            <Link to="/upload" className={classes.link}>
-              Subir una receta
-            </Link>
+            {authed ? (
+              <Link to="/upload" className={classes.link}>
+                Subir una receta
+              </Link>
+            ) : null}
           </Group>
 
           <Group className={classes.hiddenMobile}>
